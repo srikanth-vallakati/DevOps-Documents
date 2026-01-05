@@ -1,0 +1,32 @@
+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
+/var/lib/jenkins/secrets/initialAdminPassword
+
+pipeline {
+    agent any
+
+    tools{
+        maven 'M3'
+    }
+    stages {
+        stage('Git clone') {
+            steps {
+               git 'https://github.com/ashokitschool/maven-web-app.git'
+            }
+        }
+        stage('M3 build') {
+            steps {
+               sh 'mvn clean package'
+            }
+        }
+        stage('Docker build') {
+            steps {
+               sh 'docker build -t ashokit .'
+            }
+        }
+        stage('Deployment') {
+            steps {
+               sh 'docker run -d -p 9090:8080 --name sric ashokit'
+            }
+        }
+    }
+}
