@@ -1,0 +1,98 @@
++++Master & Worker - Common Commands Execution Start +++
+
+Step-1 : Install Docker
+$ sudo apt-get update
+$ sudo apt-get install docker.io
+$ docker --version
+$ sudo usermod -aG docker $USER
+$ sudo systemctl start docker $ sudo systemctl enable docker
+
+
+
+
+Step-2 : Installing Kubernetes
+# install curl
+$ sudo apt install curl
+
+# Add the GPG Kubernetes key with the command:
+$ curl-s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
+
+# To add the Xenial Kubernetes repository
+$ sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+I
+# Installing Kubeadm (Kubernetes Admin)
+$ sudo apt-get install kubeadm kubelet kubect kubernetes-cni
+
+# Run the below command to check whether the versions of the components installed are compatible
+$ sudo apt-mark hold kubeadm kubelet kubectl kubernetes-cni
+
+# Check Kubeadm version
+$ kubeadm version
+
+# Disable swap memory
+$ sudo swapoff -a
+$ sudo systemctl daemon-reload $ sudo systemctl start kubelet $ sudo systemctl enable kubelet.service
++
+++ Master & Slave Common Commands Execution End +++++++
++
+
+
+
+++ Only Master Node Commands Execution Start +++++++++++
+Step-3 : Running and Deploying Kubernetes
+
+#Initialize kubernetes on Master Node
+$ sudo kubeadm init
+
+# You need to run the following as a normal user to start using your cluster
+$ mkdir -p $HOME/ .kube
+$ sudo cp-i /etc/kubernetes/admin.conf $HOME/.kube/config
+$ sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+#check nodes connected to cluster
+$ kubectl get nodes
+
+# Deploy Pod Network to Cluster
+$ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+
+# Get worker token to add workers to cluster
+$ kubeadm token create --print-join-command
+
+
+Now add taken displayed on the master node as a root user in both worker nodes
+
+$sudo followed by taken ..
+
+#To check connection 
+$Kubectl get nodes
+
+# Now launch another(remote machine) vm and install kubectl to communicate with cluster(master & worker nodes)
+
+→ Launch a new EC2 VM
+→ Install Kubectl
+
+$ curl -LO "https://dl.k8s.io/release/$(curl-L-s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+I
+$ chmod +x./kubectl
+
+$ sudo mv ./kubectl /usr/local/bin/kubectl
+
+$ kubectl version
+
+$ mkdir ~/.kube
+
+Note: copy kube config file from master and it keep it here in remote machine(run below command in master node)
+
+$ cat ~/.kube/config
+
+#Run below command in remote machine
+$ vi ~/.kube/config
+
+# Get Nodes
+$ kubectl get nodes
+
+# Get the pods running
+$ kubectl get pods --all-namespaces
+I
+# To restart Kublet service
+$ sudo systemctl restart kubelet.service
